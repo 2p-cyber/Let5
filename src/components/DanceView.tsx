@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Project, DanceMoveType, BgPresetId } from '../types';
-import { Play, Pause, FastForward, Sliders, Volume2, Sparkles } from 'lucide-react';
+import { Play, Pause, FastForward, Sliders, Volume2, Sparkles, QrCode } from 'lucide-react';
 
 interface DanceViewProps {
   project: Project;
@@ -14,6 +14,7 @@ interface DanceViewProps {
   isPlaying: boolean;
   onTogglePlay: () => void;
   beatFactor: number; // calculated in parent (0 to 1 pulsing)
+  onOpenShare?: () => void;
 }
 
 export default function DanceView({
@@ -23,6 +24,7 @@ export default function DanceView({
   isPlaying,
   onTogglePlay,
   beatFactor,
+  onOpenShare,
 }: DanceViewProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -1061,27 +1063,40 @@ export default function DanceView({
         </div>
 
         {/* Action Toggle controls */}
-        <button
-          onClick={onTogglePlay}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 transform active:scale-95 cursor-pointer shadow-lg ${
-            isPlaying
-              ? 'bg-violet-600 hover:bg-violet-500 text-white neon-glow'
-              : 'bg-white text-black hover:bg-gray-100 font-extrabold'
-          }`}
-          id="play-pause-stage-button"
-        >
-          {isPlaying ? (
-            <>
-              <Pause className="w-4 h-4 fill-white" />
-              <span>댄스 멈추기</span>
-            </>
-          ) : (
-            <>
-              <Play className="w-4 h-4 fill-current animate-pulse" />
-              <span>댄스 시작!</span>
-            </>
+        <div className="flex items-center gap-2">
+          {onOpenShare && (
+            <button
+              onClick={onOpenShare}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all transform active:scale-95 cursor-pointer shadow-md select-none"
+              id="open-share-dialog-button"
+            >
+              <QrCode className="w-4 h-4 text-violet-400" />
+              <span>QR 공유</span>
+            </button>
           )}
-        </button>
+
+          <button
+            onClick={onTogglePlay}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 transform active:scale-95 cursor-pointer shadow-lg ${
+              isPlaying
+                ? 'bg-violet-600 hover:bg-violet-500 text-white neon-glow'
+                : 'bg-white text-black hover:bg-gray-100 font-extrabold'
+            }`}
+            id="play-pause-stage-button"
+          >
+            {isPlaying ? (
+              <>
+                <Pause className="w-4 h-4 fill-white" />
+                <span>댄스 멈추기</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-current animate-pulse" />
+                <span>댄스 시작!</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Primary Stage rendering with Absolute Overlay speech bubble */}
