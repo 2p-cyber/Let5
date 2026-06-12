@@ -1,0 +1,37 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A stickman dance project configuration representing a custom character stage, speech bubble, and beats settings.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique ID of the project" },
+        "name": { "type": "string", "description": "The custom name of the project" },
+        "createdAt": { "type": "string", "description": "Creation timestamp in Korean locale string format" },
+        "faceImage": { "type": "string", "description": "Base64 encoded string representing the face photo" },
+        "faceScale": { "type": "number", "description": "Scaling factor for the face image" },
+        "faceOffsetY": { "type": "number", "description": "Vertical offset in pixels for face placement" },
+        "bgType": { "type": "string", "enum": ["preset", "custom"], "description": "Whether to use preset or custom background" },
+        "bgPresetId": { "type": "string", "enum": ["festival", "field", "space", "city", "room"], "description": "The identifier for preset backgrounds" },
+        "bgCustomImage": { "type": "string", "description": "Base64 encoded background image data" },
+        "musicType": { "type": "string", "enum": ["preset", "link", "file"], "description": "The audio resource type" },
+        "musicPresetId": { "type": "string", "enum": ["retro_synth", "hiphop_groove", "disco_fever", "acoustic_breeze", "edm_party"], "description": "The selected synthesizer category" },
+        "musicLink": { "type": "string", "description": "Direct URL to online audio stream" },
+        "musicFileName": { "type": "string", "description": "The uploaded local music file name" },
+        "musicFileData": { "type": "string", "description": "Base64 data or blob URL of the uploaded local music file" },
+        "speechText": { "type": "string", "description": "The custom text for speech bubble annotations" },
+        "speechColor": { "type": "string", "description": "The background hex color of the speech balloon" },
+        "danceSpeed": { "type": "number", "description": "The multiplier for dancing speed and tempo" },
+        "danceMoveType": { "type": "string", "enum": ["all", "wave", "spin", "disco", "slide", "clap"], "description": "The active dance choreography move" },
+        "userId": { "type": "string", "description": "The owner user ID under Firebase authentication" }
+      },
+      "required": ["id", "name", "createdAt", "danceSpeed", "danceMoveType"]
+    }
+  },
+  "firestore": {
+    "projects/{projectId}": {
+      "schema": "Project",
+      "description": "The individual user dancing projects"
+    }
+  }
+}

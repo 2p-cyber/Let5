@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Harden Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['id', 'name', 'createdAt', 'danceSpeed', 'danceMoveType', 'userId'])
+        && data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 128
+        && data.createdAt is string && data.createdAt.size() <= 64
+        && data.danceSpeed is number
+        && data.danceMoveType is string && data.danceMoveType.size() <= 64
+        && data.userId is string && data.userId == request.auth.uid
+        && (!data.keys().hasAny(['faceImage']) || data.faceImage == null || (data.faceImage is string && data.faceImage.size() <= 5000001))
+        && (!data.keys().hasAny(['bgCustomImage']) || data.bgCustomImage == null || (data.bgCustomImage is string && data.bgCustomImage.size() <= 5000001))
+        && (!data.keys().hasAny(['musicFileData']) || data.musicFileData == null || (data.musicFileData is string && data.musicFileData.size() <= 20000001))
+        && (!data.keys().hasAny(['speechText']) || data.speechText == null || (data.speechText is string && data.speechText.size() <= 256))
+        && (!data.keys().hasAny(['speechColor']) || data.speechColor == null || (data.speechColor is string && data.speechColor.size() <= 32));
+    }
+
+    match /projects/{projectId} {
+      // Secure single document reads
+      allow get: if isSignedIn() && isOwner(existing().userId);
+      
+      // Secure list query checks - MUST prevent query scraping
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      // Secure creations - Must evaluate Schema, Types and Identity
+      allow create: if isSignedIn() 
+        && isValidId(projectId) 
+        && isValidProject(incoming());
+
+      // Secure updates - Identity and values are locked
+      allow update: if isSignedIn()
+        && isValidId(projectId)
+        && isValidProject(incoming())
+        && incoming().userId == existing().userId
+        && incoming().createdAt == existing().createdAt;
+
+      // Secure deletions
+      allow delete: if isSignedIn() 
+        && isValidId(projectId) 
+        && isOwner(existing().userId);
+    }
+  }
+}

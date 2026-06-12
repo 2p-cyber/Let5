@@ -1,0 +1,6 @@
+{
+  "name": "졸라맨 댄스 스튜디오",
+  "description": "사진을 붙여넣은 졸라맨이 음악 리듬에 맞춰 회전하고 뛰며 신나게 춤추는 모습을 감상하고, 맞춤 배경과 메시지 말풍선으로 나만의 프로젝트를 기록 및 관리할 수 있는 재미있는 큐레이션 웹앱입니다.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
